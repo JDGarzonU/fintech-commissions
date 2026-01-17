@@ -58,4 +58,19 @@ public class CreateTransactionUseCase {
                         tx.getCreatedAt()
                 ));
     }
+
+    public Mono<Long> countAll() {
+        return repository.count();
+    }
+
+    public Flux<TransactionResponse> listPage(int page, int size) {
+        long offset = (long) page * (long) size;
+        return repository.findPage(size, offset)
+                .map(tx -> new TransactionResponse(
+                        tx.getId(),
+                        tx.getAmount(),
+                        tx.getCommission(),
+                        tx.getCreatedAt()
+                ));
+    }
 }

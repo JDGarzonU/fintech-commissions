@@ -1,5 +1,5 @@
 import { Injectable, NgZone } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpResponse } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 
 export interface Transaction {
@@ -20,6 +20,13 @@ export class TransactionsService {
 
   list(): Observable<Transaction[]> {
     return this.http.get<Transaction[]>(this.baseUrl);
+  }
+
+  listPaged(page: number, size: number): Observable<HttpResponse<Transaction[]>> {
+    return this.http.get<Transaction[]>(this.baseUrl, {
+      params: { page, size },
+      observe: 'response',
+    });
   }
 
   create(amount: number): Observable<Transaction> {

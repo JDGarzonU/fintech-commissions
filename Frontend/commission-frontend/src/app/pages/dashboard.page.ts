@@ -73,6 +73,19 @@ import { Transaction, TransactionsService } from '../services/transactions';
         <div class="tableTop">
           <h2>Transacciones</h2>
           <div class="muted small">Mostrando {{ transactions().length }} registros</div>
+                    <div class="pager">
+            <button type="button" (click)="loadPage(page() - 1)" [disabled]="page() === 0">Anterior</button>
+
+            <span class="muted small">
+              Página {{ page() + 1 }} / {{ totalPages() }} · Total {{ totalElements() }}
+            </span>
+
+            <button type="button" (click)="loadPage(page() + 1)" [disabled]="page() + 1 >= totalPages()">Siguiente</button>
+          </div>
+
+          <div class="hint" *ngIf="hasNew()">
+            Hay nuevas transacciones. Vuelve a la página 1 para verlas.
+          </div>
         </div>
 
         <div class="tableWrap">
@@ -123,6 +136,43 @@ export class DashboardPage implements OnInit, OnDestroy {
     saving = signal<boolean>(false);
     errorMsg = signal<string>('');
 
+    page = signal<number>(0);
+    size = signal<number>(10);
+    totalElements = signal<number>(0);
+    totalPages = computed(() => Math.max(1, Math.ceil(this.totalElements() / this.size())));
+    hasNew = signal<boolean>(false);
+
+    private seenIds = new Set<string>();
+
+    loadPage(p: number): void {
+        this.errorMsg.set('');
+        this.hasNew.set(false);
+
+        this.sub.add(
+            this.api.listPaged(p, this.size()).subscribe({
+                next: (resp) => {
+                    const list = resp.body ?? [];
+
+                    // actualiza total desde header
+                    const total = Number(resp.headers.get('X-Total-Count') ?? '0');
+                    this.totalElements.set(Number.isFinite(total) ? total : 0);
+
+                    // set page actual
+                    this.page.set(p);
+
+                    // orden por fecha desc (por si acaso)
+                    const sorted = [...list].sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1));
+                    this.transactions.set(sorted);
+
+                    // registrar ids vistos (para evitar doble conteo con SSE)
+                    this.seenIds.clear();
+                    sorted.forEach(t => this.seenIds.add(String(t.id)));
+                },
+                error: () => this.errorMsg.set('No se pudo cargar el listado. Revisa backend/proxy.'),
+            })
+        );
+    }
+
     form = this.fb.group({
         amount: [null as number | null, [Validators.required, Validators.min(0.01)]],
     });
@@ -131,20 +181,12 @@ export class DashboardPage implements OnInit, OnDestroy {
         return this.form.controls.amount;
     }
 
-    totalCount = computed(() => this.transactions().length);
+    totalCount = computed(() => this.totalElements());
     totalAmount = computed(() => this.transactions().reduce((acc, t) => acc + Number(t.amount || 0), 0));
     totalCommission = computed(() => this.transactions().reduce((acc, t) => acc + Number(t.commission || 0), 0));
 
     ngOnInit(): void {
-        this.sub.add(
-            this.api.list().subscribe({
-                next: (list) => {
-                    const sorted = [...list].sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1));
-                    this.transactions.set(sorted);
-                },
-                error: () => this.errorMsg.set('No se pudo cargar el listado. Revisa backend/proxy.'),
-            })
-        );
+        this.loadPage(0);
 
         this.sub.add(
             this.api.sseStatus$.subscribe(ok => this.connected.set(ok))
@@ -153,9 +195,24 @@ export class DashboardPage implements OnInit, OnDestroy {
         this.sub.add(
             this.api.stream().subscribe({
                 next: (t) => {
-                    const current = this.transactions();
-                    const exists = current.some((x) => String(x.id) === String(t.id));
-                    if (!exists) this.transactions.set([t, ...current]);
+                    const id = String(t.id);
+
+                    // si ya lo vimos (en la pagina o por SSE) no vuelvas a meterlo ni contar
+                    if (this.seenIds.has(id)) return;
+
+                    this.seenIds.add(id);
+
+                    // incrementa el total global (porque llegó nueva transacción real)
+                    this.totalElements.set(this.totalElements() + 1);
+
+                    // si estás en la primera página, prepéndela y recorta a size
+                    if (this.page() === 0) {
+                        const current = this.transactions();
+                        const nextList = [t, ...current].slice(0, this.size());
+                        this.transactions.set(nextList);
+                    } else {
+                        this.hasNew.set(true);
+                    }
                 },
             })
         );
@@ -174,6 +231,8 @@ export class DashboardPage implements OnInit, OnDestroy {
                 next: () => {
                     this.form.reset({ amount: null });
                     this.saving.set(false);
+
+                    this.loadPage(0);
                 },
                 error: (err) => {
                     this.saving.set(false);

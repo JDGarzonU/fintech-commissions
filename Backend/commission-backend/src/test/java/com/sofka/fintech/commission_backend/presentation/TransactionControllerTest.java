@@ -98,4 +98,30 @@ class TransactionControllerTest {
         assertThat(next.id()).isNotNull();
         assertThat(next.amount()).isEqualByComparingTo("9999");
     }
+
+    @Test
+    void should_list_transactions_with_pagination_headers() {
+        // create a few transactions
+        for (int i = 0; i < 5; i++) {
+            webTestClient.post()
+                    .uri("/transactions")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .bodyValue(new CreateTransactionRequest(new java.math.BigDecimal("1000")))
+                    .exchange()
+                    .expectStatus().isCreated();
+        }
+
+        webTestClient.get()
+                .uri(uriBuilder -> uriBuilder.path("/transactions")
+                        .queryParam("page", 0)
+                        .queryParam("size", 2)
+                        .build())
+                .exchange()
+                .expectStatus().isOk()
+                .expectHeader().exists("X-Total-Count")
+                .expectHeader().valueEquals("X-Page", "0")
+                .expectHeader().valueEquals("X-Size", "2")
+                .expectBodyList(TransactionResponse.class)
+                .value(list -> assertThat(list.size()).isLessThanOrEqualTo(2));
+    }
 }

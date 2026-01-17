@@ -7,6 +7,7 @@ import com.sofka.fintech.commission_backend.infrastructure.TransactionStream;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
@@ -33,8 +34,26 @@ public class TransactionController {
     }
 
     @GetMapping
-    public Flux<TransactionResponse> list() {
-        return useCase.listAll();
+    public Mono<ResponseEntity<Flux<TransactionResponse>>> list(
+            @RequestParam(required = false) Integer page,
+            @RequestParam(required = false) Integer size
+    ) {
+
+        if (page == null || size == null) {
+            return Mono.just(ResponseEntity.ok(useCase.listAll()));
+        }
+
+        int safePage = Math.max(page, 0);
+        int safeSize = Math.min(Math.max(size, 1), 100);
+
+        Mono<Long> totalMono = useCase.countAll();
+        Flux<TransactionResponse> data = useCase.listPage(safePage, safeSize);
+
+        return totalMono.map(total -> ResponseEntity.ok()
+                .header("X-Total-Count", String.valueOf(total))
+                .header("X-Page", String.valueOf(safePage))
+                .header("X-Size", String.valueOf(safeSize))
+                .body(data));
     }
 
     @GetMapping(value = "/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)

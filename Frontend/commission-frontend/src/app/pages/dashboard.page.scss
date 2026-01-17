@@ -269,4 +269,21 @@
         color: #64748b;
         padding: 22px 12px;
     }
+
+    .pager {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .pager button[disabled] {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    .hint {
+        margin-top: 8px;
+        font-size: 12px;
+        opacity: 0.8;
+    }
 }
