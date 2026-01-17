@@ -182,63 +182,92 @@
         overflow: auto;
         border-radius: 12px;
         border: 1px solid #e2e8f0;
+        background: #ffffff;
+    }
+
+    table,
+    thead,
+    tbody,
+    tr,
+    th,
+    td {
+        box-sizing: border-box;
     }
 
     table {
         width: 100%;
         border-collapse: collapse;
-        font-size: 13px;
-
+        border-spacing: 0;
         table-layout: fixed;
-        min-width: 640px;
+        min-width: 680px;
+        font-size: 13px;
         font-variant-numeric: tabular-nums;
+    }
 
-        thead th {
-            text-align: left;
-            padding: 10px 12px;
-            background: #f8fafc;
-            color: #334155;
-            border-bottom: 1px solid #e2e8f0;
-            position: sticky;
-            top: 0;
+    thead th {
+        text-align: left;
+        padding: 10px 12px;
+        background: #f8fafc;
+        color: #334155;
+        border-bottom: 1px solid #e2e8f0;
+        position: sticky;
+        top: 0;
+        z-index: 1;
+        white-space: nowrap;
+    }
 
-            &:nth-child(1) {
-                width: 80px;
-            }
+    tbody td {
+        padding: 10px 12px;
+        border-bottom: 1px solid #f1f5f9;
+        color: #0f172a;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        vertical-align: middle;
+    }
 
-            &:nth-child(2) {
-                width: 160px;
-            }
+    tbody tr:hover td {
+        background: #f8fafc;
+    }
 
-            &:nth-child(3) {
-                width: 160px;
-            }
+    thead th:nth-child(1),
+    tbody td:nth-child(1) {
+        width: 72px;
+    }
 
-            &:nth-child(4) {
-                width: 220px;
-            }
-        }
+    thead th:nth-child(2),
+    tbody td:nth-child(2) {
+        width: 180px;
+    }
 
-        tbody td {
-            padding: 10px 12px;
-            border-bottom: 1px solid #f1f5f9;
-            color: #0f172a;
-            white-space: nowrap;
-        }
+    thead th:nth-child(3),
+    tbody td:nth-child(3) {
+        width: 180px;
+    }
 
-        .right {
-            text-align: right;
-            font-variant-numeric: tabular-nums;
-        }
+    thead th:nth-child(4),
+    tbody td:nth-child(4) {
+        width: 240px;
+    }
 
-        .mono {
-            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-        }
+    thead th:nth-child(2),
+    thead th:nth-child(3),
+    tbody td:nth-child(2),
+    tbody td:nth-child(3) {
+        text-align: right;
+    }
 
-        .empty {
-            text-align: center;
-            color: #64748b;
-            padding: 22px 12px;
-        }
+    tbody td:nth-child(4) {
+        font-variant-numeric: tabular-nums;
+    }
+
+    .mono {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    }
+
+    .empty {
+        text-align: center !important;
+        color: #64748b;
+        padding: 22px 12px;
     }
 }
