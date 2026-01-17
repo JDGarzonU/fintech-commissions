@@ -153,18 +153,14 @@ export class DashboardPage implements OnInit, OnDestroy {
                 next: (resp) => {
                     const list = resp.body ?? [];
 
-                    // actualiza total desde header
                     const total = Number(resp.headers.get('X-Total-Count') ?? '0');
                     this.totalElements.set(Number.isFinite(total) ? total : 0);
 
-                    // set page actual
                     this.page.set(p);
 
-                    // orden por fecha desc (por si acaso)
                     const sorted = [...list].sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1));
                     this.transactions.set(sorted);
 
-                    // registrar ids vistos (para evitar doble conteo con SSE)
                     this.seenIds.clear();
                     sorted.forEach(t => this.seenIds.add(String(t.id)));
                 },
@@ -197,15 +193,12 @@ export class DashboardPage implements OnInit, OnDestroy {
                 next: (t) => {
                     const id = String(t.id);
 
-                    // si ya lo vimos (en la pagina o por SSE) no vuelvas a meterlo ni contar
                     if (this.seenIds.has(id)) return;
 
                     this.seenIds.add(id);
 
-                    // incrementa el total global (porque llegó nueva transacción real)
                     this.totalElements.set(this.totalElements() + 1);
 
-                    // si estás en la primera página, prepéndela y recorta a size
                     if (this.page() === 0) {
                         const current = this.transactions();
                         const nextList = [t, ...current].slice(0, this.size());
@@ -231,13 +224,25 @@ export class DashboardPage implements OnInit, OnDestroy {
                 next: () => {
                     this.form.reset({ amount: null });
                     this.saving.set(false);
-
                     this.loadPage(0);
                 },
                 error: (err) => {
                     this.saving.set(false);
-                    this.errorMsg.set(err?.error?.error ?? 'Error creando la transacción.');
+
+                    const apiErr = err?.error;
+
+                    let msg =
+                        apiErr?.details?.[0]?.message ||
+                        apiErr?.error ||
+                        'Error creando la transacción.';
+
+                    if (apiErr?.details?.[0]?.field === 'amount') {
+                        msg = 'El monto es demasiado grande o tiene más de 2 decimales.';
+                    }
+
+                    this.errorMsg.set(msg);
                 },
+
             })
         );
     }
