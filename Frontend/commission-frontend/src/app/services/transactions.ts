@@ -44,12 +44,10 @@ export class TransactionsService {
         });
       };
 
-      // ✅ ESTE ES EL PUNTO CLAVE:
       es.addEventListener('transaction', onTx as EventListener);
 
       es.onerror = () => {
         this.zone.run(() => this._sseStatus.next(false));
-        // No subscriber.error(): así EventSource reconecta solo
       };
 
       return () => {
