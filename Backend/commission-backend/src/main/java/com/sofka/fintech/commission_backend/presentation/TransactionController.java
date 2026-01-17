@@ -4,6 +4,7 @@ import com.sofka.fintech.commission_backend.application.CreateTransactionRequest
 import com.sofka.fintech.commission_backend.application.CreateTransactionUseCase;
 import com.sofka.fintech.commission_backend.application.TransactionResponse;
 import com.sofka.fintech.commission_backend.infrastructure.TransactionStream;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -24,8 +25,8 @@ public class TransactionController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Mono<TransactionResponse> create(@RequestBody Mono<CreateTransactionRequest> body) {
-        return body.flatMap(useCase::execute);
+    public Mono<TransactionResponse> create(@Valid @RequestBody CreateTransactionRequest body) {
+        return useCase.execute(body);
     }
 
     @GetMapping
