@@ -155,6 +155,18 @@ Cobertura típica:
 cd Frontend/commission-frontend
 npm test
 ```
+Cobertura típica (Frontend):
+- `TransactionsService`:
+  - `GET /api/transactions` y `POST /api/transactions` (HttpTestingController)
+  - SSE: conexión/desconexión (onopen/onerror), recepción del evento `transaction`,
+    tolerancia a JSON inválido y cierre de `EventSource` al desuscribirse
+- `DashboardPage`:
+  - Carga inicial y ordenamiento por `createdAt` desc
+  - Métricas: total de transacciones, suma de montos y suma de comisiones
+  - Validaciones del formulario (required / min) y submit (éxito + error)
+  - Integración SSE en UI: estado conectado/desconectado, prepend de nuevas transacciones y no duplicar por `id`
+- `App`:
+  - Render de `router-outlet`
 
 ---
 
