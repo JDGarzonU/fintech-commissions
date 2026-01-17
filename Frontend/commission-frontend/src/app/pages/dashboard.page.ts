@@ -77,6 +77,12 @@ import { Transaction, TransactionsService } from '../services/transactions';
 
         <div class="tableWrap">
           <table>
+            <colgroup>
+                <col class="col-id" />
+                <col class="col-amount" />
+                <col class="col-commission" />
+                <col class="col-date" />
+            </colgroup>
             <thead>
               <tr>
                 <th>ID</th>
