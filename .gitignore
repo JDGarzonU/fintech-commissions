@@ -1,0 +1,20 @@
+# IntelliJ
+.idea/
+*.iml
+.vscode/
+
+# Java / Maven / Gradle
+backend/target/
+backend/.mvn/
+backend/mvnw*
+backend/gradlew*
+backend/.gradle/
+
+# Node / Angular
+frontend/node_modules/
+frontend/dist/
+frontend/.angular/
+frontend/.cache/
+
+# OS
+.DS_Store
