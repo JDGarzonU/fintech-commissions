@@ -1,0 +1,58 @@
+package com.sofka.fintech.commission_backend.application;
+
+import com.sofka.fintech.commission_backend.domain.CommissionPolicy;
+import com.sofka.fintech.commission_backend.domain.Transaction;
+import com.sofka.fintech.commission_backend.infrastructure.TransactionRepository;
+import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
+import java.time.Instant;
+import java.util.Comparator;
+import java.util.UUID;
+
+@Service
+public class CreateTransactionUseCase {
+
+    private final TransactionRepository repository;
+    private final CommissionPolicy commissionPolicy = new CommissionPolicy();
+
+    public CreateTransactionUseCase(TransactionRepository repository) {
+        this.repository = repository;
+    }
+
+    public Mono<TransactionResponse> execute(CreateTransactionRequest request) {
+        if (request == null || request.amount() == null) {
+            return Mono.error(new IllegalArgumentException("amount is required"));
+        }
+
+        var amount = request.amount();
+        var commission = commissionPolicy.calculate(amount);
+
+        Transaction tx = new Transaction(
+                null,
+                amount,
+                commission,
+                Instant.now()
+        );
+
+        return repository.save(tx)
+                .map(saved -> new TransactionResponse(
+                        saved.getId(),
+                        saved.getAmount(),
+                        saved.getCommission(),
+                        saved.getCreatedAt()
+                ));
+    }
+
+    public Flux<TransactionResponse> listAll() {
+        return repository.findAll()
+                .sort(Comparator.comparing(Transaction::getCreatedAt).reversed())
+                .map(tx -> new TransactionResponse(
+                        tx.getId(),
+                        tx.getAmount(),
+                        tx.getCommission(),
+                        tx.getCreatedAt()
+                ));
+    }
+}
