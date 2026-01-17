@@ -3,22 +3,24 @@ package com.sofka.fintech.commission_backend.application;
 import com.sofka.fintech.commission_backend.domain.CommissionPolicy;
 import com.sofka.fintech.commission_backend.domain.Transaction;
 import com.sofka.fintech.commission_backend.infrastructure.TransactionRepository;
+import com.sofka.fintech.commission_backend.infrastructure.TransactionStream;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.Instant;
 import java.util.Comparator;
-import java.util.UUID;
 
 @Service
 public class CreateTransactionUseCase {
 
     private final TransactionRepository repository;
+    private final TransactionStream stream;
     private final CommissionPolicy commissionPolicy = new CommissionPolicy();
 
-    public CreateTransactionUseCase(TransactionRepository repository) {
+    public CreateTransactionUseCase(TransactionRepository repository, TransactionStream stream) {
         this.repository = repository;
+        this.stream = stream;
     }
 
     public Mono<TransactionResponse> execute(CreateTransactionRequest request) {
@@ -42,7 +44,8 @@ public class CreateTransactionUseCase {
                         saved.getAmount(),
                         saved.getCommission(),
                         saved.getCreatedAt()
-                ));
+                ))
+                .doOnNext(stream::emit);
     }
 
     public Flux<TransactionResponse> listAll() {
