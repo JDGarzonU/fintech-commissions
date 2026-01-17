@@ -1,0 +1,244 @@
+:host {
+    display: block;
+}
+
+.page {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 28px 16px 48px;
+    color: #0f172a;
+    background: #ffffff;
+}
+
+.top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 18px;
+
+    h1 {
+        margin: 0;
+        font-size: 28px;
+        letter-spacing: -0.02em;
+    }
+
+    p {
+        margin: 6px 0 0;
+    }
+}
+
+.muted {
+    color: #64748b;
+}
+
+.small {
+    font-size: 12px;
+}
+
+.pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 999px;
+    background: #f8fafc;
+    font-size: 13px;
+
+    .dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 999px;
+        background: #94a3b8;
+    }
+
+    &.ok .dot {
+        background: #22c55e;
+    }
+
+    &.bad .dot {
+        background: #ef4444;
+    }
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    margin: 16px 0 18px;
+
+    @media (max-width: 900px) {
+        grid-template-columns: 1fr;
+    }
+}
+
+.card {
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    background: #ffffff;
+    box-shadow: 0 6px 18px rgba(2, 6, 23, 0.04);
+    padding: 16px;
+}
+
+.cardTitle {
+    font-size: 12px;
+    color: #64748b;
+    margin-bottom: 8px;
+}
+
+.cardValue {
+    font-size: 22px;
+    font-weight: 700;
+}
+
+.content {
+    display: grid;
+    grid-template-columns: 360px 1fr;
+    gap: 12px;
+
+    @media (max-width: 900px) {
+        grid-template-columns: 1fr;
+    }
+}
+
+.formCard {
+    h2 {
+        margin: 0 0 12px;
+        font-size: 16px;
+    }
+
+    form {
+        display: grid;
+        gap: 12px;
+    }
+
+    label {
+        display: grid;
+        gap: 6px;
+        font-size: 13px;
+        color: #334155;
+    }
+
+    input {
+        height: 40px;
+        border-radius: 12px;
+        border: 1px solid #e2e8f0;
+        padding: 0 12px;
+        outline: none;
+        background: #f8fafc;
+
+        &:focus {
+            border-color: #94a3b8;
+            background: #ffffff;
+        }
+    }
+
+    button {
+        height: 40px;
+        border: 0;
+        border-radius: 12px;
+        background: #0f172a;
+        color: white;
+        font-weight: 600;
+        cursor: pointer;
+
+        &:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+    }
+
+    .hint {
+        font-size: 12px;
+        color: #b91c1c;
+    }
+
+    .error {
+        font-size: 12px;
+        color: #b91c1c;
+        border: 1px solid #fecaca;
+        background: #fef2f2;
+        padding: 10px 12px;
+        border-radius: 12px;
+    }
+}
+
+.tableCard {
+    .tableTop {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: 12px;
+        margin-bottom: 10px;
+
+        h2 {
+            margin: 0;
+            font-size: 16px;
+        }
+    }
+
+    .tableWrap {
+        overflow: auto;
+        border-radius: 12px;
+        border: 1px solid #e2e8f0;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+
+        table-layout: fixed;
+        min-width: 640px;
+        font-variant-numeric: tabular-nums;
+
+        thead th {
+            text-align: left;
+            padding: 10px 12px;
+            background: #f8fafc;
+            color: #334155;
+            border-bottom: 1px solid #e2e8f0;
+            position: sticky;
+            top: 0;
+
+            &:nth-child(1) {
+                width: 80px;
+            }
+
+            &:nth-child(2) {
+                width: 160px;
+            }
+
+            &:nth-child(3) {
+                width: 160px;
+            }
+
+            &:nth-child(4) {
+                width: 220px;
+            }
+        }
+
+        tbody td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #f1f5f9;
+            color: #0f172a;
+            white-space: nowrap;
+        }
+
+        .right {
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .mono {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+        }
+
+        .empty {
+            text-align: center;
+            color: #64748b;
+            padding: 22px 12px;
+        }
+    }
+}

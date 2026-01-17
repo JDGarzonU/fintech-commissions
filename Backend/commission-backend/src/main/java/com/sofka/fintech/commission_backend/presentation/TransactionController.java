@@ -7,9 +7,12 @@ import com.sofka.fintech.commission_backend.infrastructure.TransactionStream;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.time.Duration;
 
 @RestController
 @RequestMapping("/transactions")
@@ -35,7 +38,18 @@ public class TransactionController {
     }
 
     @GetMapping(value = "/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<TransactionResponse> stream() {
-        return transactionStream.stream();
+    public Flux<ServerSentEvent<TransactionResponse>> stream() {
+
+        Flux<ServerSentEvent<TransactionResponse>> data = transactionStream.stream()
+                .map(tx -> ServerSentEvent.builder(tx)
+                        .event("transaction")
+                        .build());
+
+        Flux<ServerSentEvent<TransactionResponse>> keepAlive = Flux.interval(Duration.ofSeconds(10))
+                .map(i -> ServerSentEvent.<TransactionResponse>builder()
+                        .comment("keepalive")
+                        .build());
+
+        return Flux.merge(data, keepAlive);
     }
 }
