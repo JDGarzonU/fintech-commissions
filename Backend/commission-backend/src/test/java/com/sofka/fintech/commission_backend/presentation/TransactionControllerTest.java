@@ -90,7 +90,7 @@ class TransactionControllerTest {
 
         TransactionResponse next = stream
                 .filter(ev -> ev != null && ev.amount() != null && ev.amount().compareTo(new java.math.BigDecimal("9999")) == 0)
-                .next() // Mono<TransactionResponse>
+                .next()
                 .timeout(Duration.ofSeconds(3))
                 .block();
 

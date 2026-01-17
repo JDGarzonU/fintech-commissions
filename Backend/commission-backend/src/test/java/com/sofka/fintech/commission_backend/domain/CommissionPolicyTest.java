@@ -40,7 +40,6 @@ class CommissionPolicyTest {
     @Test
     void should_round_half_up_to_2_decimals() {
         CommissionPolicy policy = new CommissionPolicy();
-        // 10000.10 * 0.05 = 500.005 -> HALF_UP => 500.01
         BigDecimal commission = policy.calculate(new BigDecimal("10000.10"));
         assertEquals(new BigDecimal("500.01"), commission);
     }

@@ -33,7 +33,6 @@ class CreateTransactionUseCaseTest {
 
     @Test
     void execute_should_apply_5_percent_when_amount_greater_than_10000() {
-        // given: 15000 -> 5% = 750.00
         BigDecimal amount = new BigDecimal("15000");
         BigDecimal expectedCommission = new BigDecimal("750.00");
 
@@ -74,7 +73,6 @@ class CreateTransactionUseCaseTest {
 
     @Test
     void execute_should_apply_2_percent_when_amount_is_10000_or_less() {
-        // given: 10000 -> 2% = 200.00 (ojo: el 5% es estrictamente para > 10000)
         BigDecimal amount = new BigDecimal("10000");
         BigDecimal expectedCommission = new BigDecimal("200.00");
 

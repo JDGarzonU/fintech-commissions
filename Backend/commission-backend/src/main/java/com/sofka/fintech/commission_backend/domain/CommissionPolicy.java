@@ -15,7 +15,6 @@ public class CommissionPolicy {
 
         BigDecimal rate = amount.compareTo(THRESHOLD) > 0 ? RATE_HIGH : RATE_LOW;
 
-        // 2 decimales por ser dinero
         return amount.multiply(rate).setScale(2, RoundingMode.HALF_UP);
     }
 }
