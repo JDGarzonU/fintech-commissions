@@ -1,7 +1,8 @@
 import { TestBed } from '@angular/core/testing';
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient, HttpHeaders } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TransactionsService, Transaction } from './transactions';
+import { vi } from 'vitest';
 
 class FakeEventSource {
   static last?: FakeEventSource;
@@ -75,6 +76,28 @@ describe('TransactionsService', () => {
     req.flush([]);
   });
 
+  it('listPaged() debe llamar GET /api/transactions?page&size y leer headers', () => {
+    service.listPaged(0, 10).subscribe((resp) => {
+      expect(resp.body).toEqual([]);
+      expect(resp.headers.get('X-Total-Count')).toBe('25');
+    });
+
+    const req = httpMock.expectOne((r) => {
+      return (
+        r.method === 'GET' &&
+        r.url === '/api/transactions' &&
+        r.params.get('page') === '0' &&
+        r.params.get('size') === '10'
+      );
+    });
+
+    expect(req.request.method).toBe('GET');
+
+    req.flush([], {
+      headers: new HttpHeaders({ 'X-Total-Count': '25' }),
+    });
+  });
+
   it('create() debe hacer POST /api/transactions con {amount}', () => {
     const amount = 123.45;
 
@@ -123,6 +146,9 @@ describe('TransactionsService', () => {
   });
 
   it('stream() no debe romperse con JSON inválido (no emite)', () => {
+    // silencia el console.error para que no ensucie el output del test
+    const spy = vi.spyOn(console, 'error').mockImplementation(() => { });
+
     const received: Transaction[] = [];
     const sub = service.stream().subscribe((t) => received.push(t));
 
@@ -134,6 +160,7 @@ describe('TransactionsService', () => {
     expect(received.length).toBe(0);
 
     sub.unsubscribe();
+    spy.mockRestore();
   });
 
   it('al desuscribirse del stream debe cerrar EventSource y marcar desconectado', () => {
