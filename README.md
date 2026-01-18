@@ -4,14 +4,14 @@ Sistema para el procesamiento de transacciones y liquidación de comisiones con 
 
 ---
 
-## 📦 Estructura del repositorio
+## Estructura del repositorio
 
 - `Backend/commission-backend` → Spring Boot (WebFlux) + H2 (R2DBC)
 - `Frontend/commission-frontend` → Angular (standalone)
 
 ---
 
-## ✅ Requisitos de la prueba (cobertura)
+## Requisitos de la prueba (cobertura)
 
 - Registrar transacciones y calcular comisión por regla de negocio.
 - Persistencia relacional (H2) + listado de transacciones.
@@ -25,7 +25,7 @@ Sistema para el procesamiento de transacciones y liquidación de comisiones con 
 
 ---
 
-## 🧰 Prerrequisitos
+## Prerrequisitos
 
 ### Backend
 - Java 17  
@@ -41,7 +41,7 @@ Puertos por defecto:
 
 ---
 
-## ▶️ Cómo ejecutar (modo desarrollo)
+## Cómo ejecutar (modo desarrollo)
 
 ### 1) Backend (Spring Boot)
 ```bash
@@ -71,7 +71,7 @@ Frontend disponible en:
 
 ---
 
-## 🔌 API (Backend)
+## API (Backend)
 
 Base URL: `http://localhost:8080`
 
@@ -121,7 +121,7 @@ curl -N http://localhost:8080/transactions/stream
 
 ---
 
-## 🖥️ Frontend (Angular)
+## Frontend (Angular)
 
 El frontend consume:
 - `GET /api/transactions`
@@ -136,7 +136,7 @@ Esto evita problemas de CORS y mejora la estabilidad del stream SSE durante desa
 
 ---
 
-## 🧪 Pruebas
+## Pruebas
 
 ### Backend
 ```bash
@@ -170,7 +170,7 @@ Cobertura típica (Frontend):
 
 ---
 
-## 🤖 AI Assistance Disclosure (uso responsable)
+## AI Assistance Disclosure (uso responsable)
 
 Usé herramientas de IA como apoyo para **optimizar tiempo** y mejorar calidad, principalmente en:
 
@@ -185,6 +185,6 @@ Usé herramientas de IA como apoyo para **optimizar tiempo** y mejorar calidad, 
 
 ---
 
-## 📌 Notas
+## Notas
 - Base de datos: **H2 (R2DBC)** para ejecución local rápida y determinista.
 - Enfoque: claridad, trazabilidad y facilidad de ejecución por parte del evaluador.
